@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Jogo de Sinais - Funcional</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🐯 Tigrinho da Segurança 🐯</h1>
+        <div class="game-screen" id="gameScreen">
+            <div class="signal-icon" id="signalIcon">🎰</div>
+            <div class="signal-text" id="signalText">Pronto para começar!</div>
+        </div>
+        <button id="startButton" class="start-button" onclick="requestStartGame()">Iniciar Jogo</button>
+    </div>
+
+    <script>
+        const socket = io();
+        // Use static paths served by Flask
+        const spinSound = new Audio('/static/spin_sound.mp3');
+        const winSound = new Audio('/static/win_sound.mp3');
+        // Pré-carregar os arquivos de áudio para garantir que estejam prontos
+        spinSound.load();
+        winSound.load();
+        let isPlaying = false;
+        const gameScreen = document.getElementById('gameScreen');
+        const signalIcon = document.getElementById('signalIcon');
+        const signalText = document.getElementById('signalText');
+        const startButton = document.getElementById('startButton');
+
+
+
+        function stopAllSounds() {
+            try {
+                spinSound.pause(); spinSound.currentTime = 0;
+            } catch(e){}
+            try {
+                winSound.pause(); winSound.currentTime = 0;
+            } catch(e){}
+        }
+
+        function playSpinSound() {
+            stopAllSounds();
+            // Configura o som de giro para loop, como em um casino
+            spinSound.loop = true;
+            spinSound.play().catch(e => console.warn('Não foi possível tocar spin sound:', e));
+        }
+
+        function playWinSound() {
+            stopAllSounds();
+            winSound.play().catch(e => console.warn('Não foi possível tocar win sound:', e));
+        }
+
+        function requestStartGame() {
+            if (isPlaying) return;
+            startButton.disabled = true;
+            signalText.textContent = 'Aguardando sincronização...';
+            socket.emit('start_game_request');
+        }
+
+        async function runGameSequence() {
+            if (isPlaying) return;
+            isPlaying = true;
+            startButton.disabled = true;
+
+            // Phase 1: Spin
+            signalIcon.textContent = '🔄';
+            signalText.textContent = 'GIRAR A MÃO!';
+            playSpinSound();
+
+            await sleep(4000);
+
+            // Phase 2: Show / Stop spin
+            // Parar o som de giro antes de tocar o de vitória
+            spinSound.pause();
+            spinSound.currentTime = 0;
+
+            signalIcon.textContent = '✋';
+            signalText.textContent = 'PEGAR E MOSTRAR!';
+            playWinSound();
+
+            await sleep(4000);
+
+            // Reset
+            signalIcon.textContent = '🎰';
+            signalText.textContent = 'Pronto para começar!';
+            startButton.disabled = false;
+            isPlaying = false;
+            // stopAllSounds() já é chamado dentro de playWinSound() e playSpinSound()
+            // Mas vamos garantir que o som de vitória pare após o reset
+            winSound.pause();
+            winSound.currentTime = 0;
+        }
+
+        function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+        socket.on('connect', () => {
+            console.log('Conectado ao servidor WebSocket!');
+            signalText.textContent = 'Conectado. Pronto para começar!';
+            startButton.disabled = false;
+        });
+        socket.on('disconnect', () => {
+            console.log('Desconectado do servidor WebSocket.');
+            signalText.textContent = 'Desconectado. Recarregue a página.';
+            startButton.disabled = true;
+        });
+        socket.on('run_game', (data) => {
+            console.log('Evento run_game recebido', data);
+            runGameSequence();
+        });
+
+        // Primeira interação para ativar contexto de áudio em alguns navegadores
+        document.addEventListener('click', () => {
+            // Tenta tocar um som mudo para ativar o contexto de áudio
+            const a = new Audio();
+            a.play().catch(()=>{});
+            
+            // Tenta tocar os sons principais para garantir que o contexto esteja ativo
+            spinSound.play().catch(()=>{});
+            winSound.play().catch(()=>{});
+            stopAllSounds(); // Para imediatamente após a tentativa de ativação
+        }, { once:true });
+    </script>
+</body>
+</html>

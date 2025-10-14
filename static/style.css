@@ -1,0 +1,55 @@
+
+/* Minimal styles for functional version */
+body { 
+    font-family: Arial, sans-serif; 
+    background: #99702e; /* Marrom Escuro (Fundo Principal) */
+    color: #FFF; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100vh; 
+    margin: 0; 
+}
+.container { 
+    width: 90vw; 
+    max-width: 900px; 
+    padding: 24px; 
+    background: linear-gradient(135deg, #3c5e1f, #2a4515); /* Gradiente de Verde Escuro (Mesa de Casino) */
+    border-radius: 12px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
+    text-align: center; 
+}
+.start-button { 
+    padding: 14px 36px; 
+    font-size: 18px; 
+    border-radius: 999px; 
+    border: none; 
+    cursor: pointer; 
+    background: #fbbb03; /* Amarelo Ouro (Botão) */
+    color: #99702e; /* Texto Marrom Escuro no botão */
+    font-weight: 700; 
+    transition: background-color 0.3s;
+}
+.start-button:hover {
+    background: #f78402; /* Amarelo Ouro mais escuro no hover */
+}
+.game-screen { 
+    margin: 24px auto; 
+    padding: 20px; 
+    border-radius: 10px; 
+    background: #f0d7a8; /* Amarelo Claro (Tela de Jogo) */
+    color: #99702e; /* Texto Marrom Escuro na tela de jogo */
+    min-height: 220px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+}
+.signal-icon { 
+    font-size: 100px; 
+}
+.signal-text { 
+    font-size: 24px; 
+    margin-top: 10px; 
+}
+
