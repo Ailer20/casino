@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,7 +11,10 @@
     <div class="container">
         <h1>🐯 Tigrinho da Segurança 🐯</h1>
         <div class="game-screen" id="gameScreen">
-            <div class="signal-icon" id="signalIcon">🎰</div>
+            <div class="roulette-wheel" id="rouletteWheel">
+                <div class="roulette-inner"></div>
+            </div>
+            <div class="stop-icon" id="stopIcon" style="display: none;">✋</div>
             <div class="signal-text" id="signalText">Pronto para começar!</div>
         </div>
         <button id="startButton" class="start-button" onclick="requestStartGame()">Iniciar Jogo</button>
@@ -21,16 +23,18 @@
     <script>
         const socket = io();
         // Use static paths served by Flask
-        const spinSound = new Audio('/static/spin_sound.mp3');
-        const winSound = new Audio('/static/win_sound.mp3');
+        const spinSound = new Audio("/static/spin_sound.mp3");
+        const winSound = new Audio("/static/win_sound.mp3");
         // Pré-carregar os arquivos de áudio para garantir que estejam prontos
         spinSound.load();
         winSound.load();
         let isPlaying = false;
-        const gameScreen = document.getElementById('gameScreen');
-        const signalIcon = document.getElementById('signalIcon');
-        const signalText = document.getElementById('signalText');
-        const startButton = document.getElementById('startButton');
+        const gameScreen = document.getElementById("gameScreen");
+        const rouletteWheel = document.getElementById("rouletteWheel");
+        const stopIcon = document.getElementById("stopIcon");
+        const rouletteInner = document.querySelector("#rouletteWheel .roulette-inner");
+        const signalText = document.getElementById("signalText");
+        const startButton = document.getElementById("startButton");
 
 
 
@@ -47,19 +51,19 @@
             stopAllSounds();
             // Configura o som de giro para loop, como em um casino
             spinSound.loop = true;
-            spinSound.play().catch(e => console.warn('Não foi possível tocar spin sound:', e));
+            spinSound.play().catch(e => console.warn("Não foi possível tocar spin sound:", e));
         }
 
         function playWinSound() {
             stopAllSounds();
-            winSound.play().catch(e => console.warn('Não foi possível tocar win sound:', e));
+            winSound.play().catch(e => console.warn("Não foi possível tocar win sound:", e));
         }
 
         function requestStartGame() {
             if (isPlaying) return;
             startButton.disabled = true;
-            signalText.textContent = 'Aguardando sincronização...';
-            socket.emit('start_game_request');
+            signalText.textContent = "Aguardando sincronização...";
+            socket.emit("start_game_request");
         }
 
         async function runGameSequence() {
@@ -68,26 +72,34 @@
             startButton.disabled = true;
 
             // Phase 1: Spin
-            signalIcon.textContent = '🔄';
-            signalText.textContent = 'GIRAR A MÃO!';
+            rouletteWheel.style.display = "flex"; // Mostra a roleta
+            stopIcon.style.display = "none"; // Esconde o ícone de parada
+            rouletteInner.classList.add("spinning");
+            signalText.textContent = "GIRAR A MÃO!";
             playSpinSound();
+            
 
             await sleep(4000);
 
             // Phase 2: Show / Stop spin
             // Parar o som de giro antes de tocar o de vitória
+            rouletteInner.classList.remove("spinning");
             spinSound.pause();
             spinSound.currentTime = 0;
 
-            signalIcon.textContent = '✋';
-            signalText.textContent = 'PEGAR E MOSTRAR!';
+            
+            rouletteWheel.style.display = "none"; // Esconde a roleta
+            stopIcon.style.display = "flex"; // Mostra o ícone de parada
+            signalText.textContent = "PEGAR E MOSTRAR!";
             playWinSound();
 
             await sleep(4000);
 
             // Reset
-            signalIcon.textContent = '🎰';
-            signalText.textContent = 'Pronto para começar!';
+            
+            signalText.textContent = "Pronto para começar!";
+            rouletteWheel.style.display = "flex"; // Mostra a roleta novamente
+            stopIcon.style.display = "none"; // Esconde o ícone de parada
             startButton.disabled = false;
             isPlaying = false;
             // stopAllSounds() já é chamado dentro de playWinSound() e playSpinSound()
@@ -98,23 +110,23 @@
 
         function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-        socket.on('connect', () => {
-            console.log('Conectado ao servidor WebSocket!');
-            signalText.textContent = 'Conectado. Pronto para começar!';
+        socket.on("connect", () => {
+            console.log("Conectado ao servidor WebSocket!");
+            signalText.textContent = "Conectado. Pronto para começar!";
             startButton.disabled = false;
         });
-        socket.on('disconnect', () => {
-            console.log('Desconectado do servidor WebSocket.');
-            signalText.textContent = 'Desconectado. Recarregue a página.';
+        socket.on("disconnect", () => {
+            console.log("Desconectado do servidor WebSocket.");
+            signalText.textContent = "Desconectado. Recarregue a página.";
             startButton.disabled = true;
         });
-        socket.on('run_game', (data) => {
-            console.log('Evento run_game recebido', data);
+        socket.on("run_game", (data) => {
+            console.log("Evento run_game recebido", data);
             runGameSequence();
         });
 
         // Primeira interação para ativar contexto de áudio em alguns navegadores
-        document.addEventListener('click', () => {
+        document.addEventListener("click", () => {
             // Tenta tocar um som mudo para ativar o contexto de áudio
             const a = new Audio();
             a.play().catch(()=>{});
@@ -127,3 +139,4 @@
     </script>
 </body>
 </html>
+

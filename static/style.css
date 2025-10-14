@@ -1,55 +1,154 @@
-
 /* Minimal styles for functional version */
-body { 
-    font-family: Arial, sans-serif; 
+body {
+    font-family: Arial, sans-serif;
     background: #99702e; /* Marrom Escuro (Fundo Principal) */
-    color: #FFF; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    height: 100vh; 
-    margin: 0; 
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
 }
-.container { 
-    width: 90vw; 
-    max-width: 900px; 
-    padding: 24px; 
+.container {
+    height: 700px;
+    width: 90vw;
+    max-width: 1300px;
+    padding: 24px;
     background: linear-gradient(135deg, #3c5e1f, #2a4515); /* Gradiente de Verde Escuro (Mesa de Casino) */
-    border-radius: 12px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
-    text-align: center; 
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    text-align: center;
 }
-.start-button { 
-    padding: 14px 36px; 
-    font-size: 18px; 
-    border-radius: 999px; 
-    border: none; 
-    cursor: pointer; 
+.start-button {
+    padding: 14px 36px;
+    font-size: 18px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
     background: #fbbb03; /* Amarelo Ouro (Botão) */
     color: #99702e; /* Texto Marrom Escuro no botão */
-    font-weight: 700; 
+    font-weight: 700;
     transition: background-color 0.3s;
 }
 .start-button:hover {
     background: #f78402; /* Amarelo Ouro mais escuro no hover */
 }
-.game-screen { 
-    margin: 24px auto; 
-    padding: 20px; 
-    border-radius: 10px; 
+.game-screen {
+    margin: 24px auto;
+    padding: 100px;
+    border-radius: 15px;
     background: #f0d7a8; /* Amarelo Claro (Tela de Jogo) */
     color: #99702e; /* Texto Marrom Escuro na tela de jogo */
-    min-height: 220px; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
+    min-height: 350px;
+    width: 80%; /* Aumenta a largura do card */
+    max-width: 600px; /* Garante que não fique muito grande em telas maiores */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
-.signal-icon { 
-    font-size: 100px; 
-}
-.signal-text { 
-    font-size: 24px; 
-    margin-top: 10px; 
+.roulette-wheel {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 8px solid #fbbb03;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
 }
 
+.roulette-inner {
+    width: 100%;
+    height: 100%;
+    background: conic-gradient(
+        #e74c3c 0% 16.66%,
+        #2ecc71 16.66% 33.33%,
+        #3498db 33.33% 50%,
+        #f1c40f 50% 66.66%,
+        #9b59b6 66.66% 83.33%,
+        #e67e22 83.33% 100%
+    );
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+    animation-play-state: paused; /* Pausado por padrão */
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.roulette-inner.spinning {
+    animation-play-state: running;
+}
+
+.stop-icon {
+    font-size: 100px; /* Tamanho grande para o ícone */
+    color: #e74c3c; /* Cor vermelha para indicar 'parar' */
+    position: absolute; /* Posicionamento absoluto para sobrepor a roleta */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* Garante que fique acima da roleta */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px; /* Mesma largura da roleta para centralização */
+    height: 150px; /* Mesma altura da roleta para centralização */
+    border-radius: 50%; /* Para manter a forma circular se for um fundo */
+    background-color: rgba(255, 255, 255, 0.8); /* Fundo semi-transparente */
+    border: 8px solid #e74c3c; /* Borda vermelha */
+}
+
+.signal-text {
+    font-size: 24px;
+    margin-top: 10px;
+}
+
+.result {
+    font-size: 22px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+.history {
+    margin-top: 20px;
+    text-align: left;
+    max-height: 150px;
+    overflow-y: auto;
+    background: #fff;
+    color: #333;
+    padding: 10px;
+    border-radius: 8px;
+}
+.history h3 {
+    margin-top: 0;
+}
+.history ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.history li {
+    margin-bottom: 6px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+}
+@media (max-width: 600px) {
+    .game-screen {
+        width: 100%;
+        padding: 20px;
+    }
+    .roulette-wheel {
+        width: 120px;
+        height: 120px;
+    }
+    .stop-icon {
+        font-size: 80px;
+        width: 120px;
+        height: 120px;
+    }
+}
