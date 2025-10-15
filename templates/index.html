@@ -11,11 +11,14 @@
     <div class="container">
         <h1>🐯 Tigrinho da Segurança 🐯</h1>
         <div class="game-screen" id="gameScreen">
-            <div class="roulette-wheel" id="rouletteWheel">
-                <div class="roulette-inner"></div>
+            <!-- Novo container para o ícone e o texto para controlar o posicionamento -->
+            <div class="signal-display">
+                <div class="roulette-wheel" id="rouletteWheel">
+                    <div class="roulette-inner"></div>
+                </div>
+                <div class="stop-icon" id="stopIcon" style="display: none;">✋</div>
+                <div class="signal-text" id="signalText">Pronto para começar!</div>
             </div>
-            <div class="stop-icon" id="stopIcon" style="display: none;">✋</div>
-            <div class="signal-text" id="signalText">Pronto para começar!</div>
         </div>
         <button id="startButton" class="start-button" onclick="requestStartGame()">Iniciar Jogo</button>
     </div>
@@ -77,7 +80,7 @@
             rouletteInner.classList.add("spinning");
             signalText.textContent = "GIRAR A MÃO!";
             playSpinSound();
-            
+
 
             await sleep(4000);
 
@@ -87,7 +90,7 @@
             spinSound.pause();
             spinSound.currentTime = 0;
 
-            
+
             rouletteWheel.style.display = "none"; // Esconde a roleta
             stopIcon.style.display = "flex"; // Mostra o ícone de parada
             signalText.textContent = "PEGAR E MOSTRAR!";
@@ -96,7 +99,7 @@
             await sleep(4000);
 
             // Reset
-            
+
             signalText.textContent = "Pronto para começar!";
             rouletteWheel.style.display = "flex"; // Mostra a roleta novamente
             stopIcon.style.display = "none"; // Esconde o ícone de parada
@@ -130,7 +133,7 @@
             // Tenta tocar um som mudo para ativar o contexto de áudio
             const a = new Audio();
             a.play().catch(()=>{});
-            
+
             // Tenta tocar os sons principais para garantir que o contexto esteja ativo
             spinSound.play().catch(()=>{});
             winSound.play().catch(()=>{});
@@ -139,4 +142,3 @@
     </script>
 </body>
 </html>
-
